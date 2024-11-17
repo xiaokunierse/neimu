@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <script>
+        const excludedSeats = [
+            (0 * 21) + 7,
+            (0 * 21) + 1,
+            (0 * 21) + 2,
+            (2 * 21) + 0,
+            (2 * 21) + 6,
+            (2 * 21) + 2,
+        ];
+
+        // 监听其他窗口发来的消息
+        window.addEventListener('message', function (event) {
+            if (event.origin === 'https://xiaokunierse.github.io/random/') {  // 验证消息来源合法性
+                const data = event.data;
+                if (data.type === 'addIndex') {
+                    excludedSeats.push(data.index);
+                    // 可以把更新后的 excludedSeats 回传给目标网页（可选操作）
+                    event.source.postMessage({
+                        type: 'updateSeats',
+                        seats: excludedSeats
+                    }, event.origin);
+                } else if (data.type ==='removeIndex') {
+                    const indexToRemove = data.index;
+                    const index = excludedSeats.indexOf(indexToRemove);
+                    if (index > -1) {
+                        excludedSeats.splice(index, 1);
+                    }
+                    // 同样可以回传更新后的数据
+                    event.source.postMessage({
+                        type: 'updateSeats',
+                        seats: excludedSeats
+                    }, event.origin);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
